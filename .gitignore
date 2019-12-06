@@ -1,5 +1,6 @@
 *.csv
 *.xls
 *.xlsx
+*.json
 **/__pycache__/
 **/.vscode/

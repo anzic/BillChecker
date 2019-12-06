@@ -64,5 +64,6 @@ class BillAliPay(Bill):
 if __name__ == '__main__':
     bill = BillAliPay()
     bill.parse('./Bill/alipay_record_20191205_1328_1.csv')
+    bill.classify('classify_rule.json')
     bill.save()
     

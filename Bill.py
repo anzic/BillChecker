@@ -1,13 +1,38 @@
-import xlwt 
 from xlwt import Workbook 
+from ClassifyRule import JsonParser
 
 class Bitem():
-    def __init__(self, btype=None, amount=None, time=None, des=None, src=None):
+    def __init__(self, btype='', amount=0, time=None, des='', src=''):
         self.type = btype
         self.amount = amount
         self.time = time
         self.des = des
         self.src = src
+
+    def write_sheet(self, sheet, idx):
+        'write item to sheet'
+        sheet.write(idx, 0, self.time.strftime('%Y-%m-%d'))
+        sheet.write(idx, 1, self.time.strftime('%H:%M:%S'))
+        if self.amount > 0:
+            sheet.write(idx, 2, 'Income')
+        else:
+            sheet.write(idx, 2, 'Expense')
+
+        sheet.write(idx, 3, self.amount)
+        sheet.write(idx, 4, self.type)
+        sheet.write(idx, 5, self.des)
+        sheet.write(idx, 6, self.src)
+
+    def classify(self, rule):
+        'classify item with rule'
+        attr_dict = {'type':self.type, 'amount':self.amount, 'time':self.time, 'des':self.des, 'src':self.src}
+        attr = attr_dict[rule.attr]
+
+        if rule.relation.lower() == 'contain':
+            if rule.value in attr:
+                self.type = rule.type
+        else:
+            print('not support current rule.relation:'+rule.relation)
 
 class Bill():
     def __init__(self):
@@ -25,36 +50,27 @@ class Bill():
         'save bill to excel'
         wb = Workbook()
         sheet1 = wb.add_sheet('Sheet 1')
-        sheet1.write(0, 0, 'Date')
-        sheet1.write(0, 1, 'Time')
-        sheet1.write(0, 2, 'Income/Expense')
-        sheet1.write(0, 3, 'Amount')
-        sheet1.write(0, 4, 'Type')
-        sheet1.write(0, 5, 'Description')
-        sheet1.write(0, 6, 'Bill Source')
-        
-        idx = 1
-        for item in self.conts:
-            sheet1.write(idx, 0, item.time.strftime('%Y-%m-%d'))
-            sheet1.write(idx, 1, item.time.strftime('%H:%M:%S'))
-            if item.amount > 0:
-                sheet1.write(idx, 2, 'Income')
-            else:
-                sheet1.write(idx, 2, 'Expense')
+        self.write_sheet_head(sheet1)
 
-            sheet1.write(idx, 3, item.amount)
-            sheet1.write(idx, 4, item.type)
-            sheet1.write(idx, 5, item.des)
-            sheet1.write(idx, 6, item.src)
-            idx += 1
+        for i in range(0, len(self.conts)):
+            self.conts[i].write_sheet(sheet1, i+1)
         
         wb.save(fname) 
+
+    def write_sheet_head(self, sheet):
+        Headers = ['Date', 'Time', 'Income/Expense', 'Amount', 'Type', 'Description', 'Bill Source']
+        for i in range(0, len(Headers)):
+            sheet.write(0, i, Headers[i])
 
     def deduplicate(self):
         'remove duplicated items'
         pass
 
-    def autoclassify(self, key_fname='my.key'):
+    def classify(self, rule_fname):
+        rules = JsonParser(rule_fname)
+        for i in range(0, len(self.conts)):
+            for rule in rules:
+                self.conts[i].classify(rule)
         pass
 
 
