@@ -48,14 +48,14 @@ class Bill():
                 self.conts[i].classify(rule)
         pass
 
-def ParseBillFolder(folder):
+def ParseBillFolder(bill_dir):
     from BillAliPay import BillAliPay
     from BillCMB import BillCMB
     from BillCOMM import BillCOMM
+    from BillSPDB import BillSPDB
 
     bills = []
 
-    bill_dir = r'./bill/'
     files = os.listdir(bill_dir)
     for f in files:
         if f.startswith('AliPay-'):
@@ -64,6 +64,8 @@ def ParseBillFolder(folder):
             bill = BillCMB()
         elif f.startswith('COMM-'):
             bill = BillCOMM()
+        elif f.startswith('SPDB-'):
+            bill = BillSPDB()
         else:
             continue  
         bill.parse(bill_dir+f)
