@@ -24,7 +24,7 @@ class BillSPDB(Bill):
         if '支付宝' in des:
             return
         time = datetime.strptime(row[0], '%Y%m%d %H:%M:%S') 
-        amount = float(row[6])
+        amount = -float(row[6])
 
         bitem = Bitem(amount=amount, time=time, des=des, src='SPDB')
         self.conts.append(bitem)

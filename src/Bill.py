@@ -58,13 +58,13 @@ def ParseBillFolder(bill_dir):
 
     files = os.listdir(bill_dir)
     for f in files:
-        if f.startswith('AliPay-'):
+        if 'AliPay' in f:
             bill = BillAliPay()
-        elif f.startswith('CMB-'):
+        elif 'CMB' in f:
             bill = BillCMB()
-        elif f.startswith('COMM-'):
+        elif 'COMM' in f:
             bill = BillCOMM()
-        elif f.startswith('SPDB-'):
+        elif 'SPDB' in f:
             bill = BillSPDB()
         else:
             continue  

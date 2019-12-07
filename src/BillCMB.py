@@ -52,7 +52,7 @@ class BillCMB(Bill):
             amount = amount.replace('&nbsp', '')
             amount = amount.replace(';', '')
             amount = amount.replace(' ', '')
-            amount = float(amount)
+            amount = -float(amount)
             
             bitem = Bitem(amount=amount, time=time, des=des, src='CMB')
             self.conts.append(bitem)
