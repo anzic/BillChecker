@@ -1,5 +1,5 @@
 # encoding: utf-8
-from Bill import Bitem
+from Bitem import Bitem
 from Bill import Bill
 
 import csv
@@ -63,7 +63,7 @@ class BillAliPay(Bill):
 
 if __name__ == '__main__':
     bill = BillAliPay()
-    bill.parse('./Bill/alipay_record_20191205_1328_1.csv')
-    bill.classify('classify_rule.json')
+    bill.parse('./bill/AliPay-201911.csv')
+    bill.classify('./rule/classify_rule.json')
     bill.save()
     

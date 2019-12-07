@@ -1,5 +1,5 @@
 # encoding: utf-8
-from Bill import Bitem
+from Bitem import Bitem
 from Bill import Bill
 
 from datetime import datetime
@@ -41,8 +41,11 @@ class BillCMB(Bill):
         for i in range(0, len(res)//7):
             target = res[i*7:(i+1)*7]
             
-            time = datetime.strptime(self.year+target[0], '%Y%m%d')
             des = target[2]
+            if '支付宝' in des:
+                continue
+
+            time = datetime.strptime(self.year+target[0], '%Y%m%d')
             
             amount = amount = target[3] # ￥&nbsp;54.99
             amount = amount.replace('￥', '')

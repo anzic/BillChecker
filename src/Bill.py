@@ -1,38 +1,9 @@
 from xlwt import Workbook 
+import os
+from datetime import datetime
+
+from Bitem import Bitem
 from ClassifyRule import JsonParser
-
-class Bitem():
-    def __init__(self, btype='', amount=0, time=None, des='', src=''):
-        self.type = btype
-        self.amount = amount
-        self.time = time
-        self.des = des
-        self.src = src
-
-    def write_sheet(self, sheet, idx):
-        'write item to sheet'
-        sheet.write(idx, 0, self.time.strftime('%Y-%m-%d'))
-        sheet.write(idx, 1, self.time.strftime('%H:%M:%S'))
-        if self.amount > 0:
-            sheet.write(idx, 2, 'Income')
-        else:
-            sheet.write(idx, 2, 'Expense')
-
-        sheet.write(idx, 3, self.amount)
-        sheet.write(idx, 4, self.type)
-        sheet.write(idx, 5, self.des)
-        sheet.write(idx, 6, self.src)
-
-    def classify(self, rule):
-        'classify item with rule'
-        attr_dict = {'type':self.type, 'amount':self.amount, 'time':self.time, 'des':self.des, 'src':self.src}
-        attr = attr_dict[rule.attr]
-
-        if rule.relation.lower() == 'contain':
-            if rule.value in attr:
-                self.type = rule.type
-        else:
-            print('not support current rule.relation:'+rule.relation)
 
 class Bill():
     def __init__(self):
@@ -42,9 +13,17 @@ class Bill():
         'parse bill content from excel(fname)'
         pass
     
-    def extend(self, bill_t):
-        'extend bill with bill_t'
-        self.conts.extend(bill_t.conts)
+    def merge(self, bill_t):
+        'merge bill with bill_t'
+        for bitem in bill_t.conts:
+            self.merge_item(bitem)
+
+    def merge_item(self, bitem):
+        'insert bitem to bill'
+        for i in range(0, len(self.conts)):
+            if self.conts[i].merge_item(bitem):
+                return
+        self.conts.append(bitem)
     
     def save(self, fname='bill.xls'):
         'save bill to excel'
@@ -62,10 +41,6 @@ class Bill():
         for i in range(0, len(Headers)):
             sheet.write(0, i, Headers[i])
 
-    def deduplicate(self):
-        'remove duplicated items'
-        pass
-
     def classify(self, rule_fname):
         rules = JsonParser(rule_fname)
         for i in range(0, len(self.conts)):
@@ -73,9 +48,38 @@ class Bill():
                 self.conts[i].classify(rule)
         pass
 
+def ParseBillFolder(folder):
+    from BillAliPay import BillAliPay
+    from BillCMB import BillCMB
+    from BillCOMM import BillCOMM
 
+    bills = []
 
+    bill_dir = r'./bill/'
+    files = os.listdir(bill_dir)
+    for f in files:
+        if f.startswith('AliPay-'):
+            bill = BillAliPay()
+        elif f.startswith('CMB-'):
+            bill = BillCMB()
+        elif f.startswith('COMM-'):
+            bill = BillCOMM()
+        else:
+            continue  
+        bill.parse(bill_dir+f)
+        bills.append(bill)
+
+    # Merge Bills
+    bill = Bill()
+    for bill_t in bills:
+        bill.merge(bill_t)
+
+    bill.classify('./rule/classify_rule.json')
+
+    return bill 
 
 if __name__ == '__main__':
-    pass
+    bill = ParseBillFolder('./bill/')
+    bill.save()
+
     

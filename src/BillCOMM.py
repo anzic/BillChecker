@@ -1,5 +1,5 @@
 # encoding: utf-8
-from Bill import Bitem
+from Bitem import Bitem
 from Bill import Bill
 
 from datetime import datetime
@@ -38,9 +38,11 @@ class BillCOMM(Bill):
         for i in range(0, len(res)//6):
             target = res[i*6:(i+1)*6]
             
-            time = datetime.strptime(target[0], '%Y/%m/%d')
             des = target[3]
-        
+            if '支付宝' in des:
+                continue       
+
+            time = datetime.strptime(target[0], '%Y/%m/%d')
             amount = amount = target[4] # RMB 1.50
             amount = amount.replace('RMB', '')
             amount = amount.replace(' ', '')
