@@ -17,10 +17,11 @@ class BillCOMM(Bill):
         eml = f.read()
         f.close()
 
+        charset = self.get_eml_charset(eml)
         pattern = re.compile(r'\n\n(.*)', re.S)
         eml = pattern.findall(eml)[0]
         eml = base64.b64decode(eml)
-        eml = eml.decode('gbk')
+        eml = eml.decode(charset)
 
         pattern = re.compile(r'还款、退货、费用返还明细(.*?)消费、取现、其他费用明细(.*)', re.S)
         (eml_income, eml_expense) = pattern.findall(eml)[0]

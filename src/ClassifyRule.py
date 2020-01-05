@@ -4,7 +4,6 @@ import json
 class ClassifyRule():
     def __init__(self, rule_dict):
         'init rule with dict'
-        self.attr = rule_dict['attr']
         self.relation = rule_dict['relation']
         self.value = rule_dict['value']
         self.type = rule_dict['type']

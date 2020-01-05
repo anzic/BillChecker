@@ -1,6 +1,7 @@
 from xlwt import Workbook 
 import os
 from datetime import datetime
+import re
 
 from Bitem import Bitem
 from ClassifyRule import JsonParser
@@ -41,12 +42,19 @@ class Bill():
         for i in range(0, len(Headers)):
             sheet.write(0, i, Headers[i])
 
-    def classify(self, rule_fname):
-        rules = JsonParser(rule_fname)
+    def classify(self, rule_fnames):
+        rules = []
+        for rule_fname in rule_fnames:
+            rules.extend(JsonParser(rule_fname))
         for i in range(0, len(self.conts)):
             for rule in rules:
                 self.conts[i].classify(rule)
         pass
+    
+    def get_eml_charset(self, eml):
+        pattern = re.compile(r'charset="(.*?)"')
+        res = pattern.findall(eml)
+        return res[0]
 
 def ParseBillFolder(bill_dir):
     from BillAliPay import BillAliPay
@@ -76,7 +84,8 @@ def ParseBillFolder(bill_dir):
     for bill_t in bills:
         bill.merge(bill_t)
 
-    bill.classify('./rule/classify_rule.json')
+    rules = ['./rule/rule_high.json', './rule/rule_mid.json', './rule/rule_low.json']
+    bill.classify(rules)
 
     return bill 
 

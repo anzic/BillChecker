@@ -24,11 +24,13 @@ class Bitem():
 
     def classify(self, rule):
         'classify item with rule'
-        attr_dict = {'type':self.type, 'amount':self.amount, 'time':self.time, 'des':self.des, 'src':self.src}
-        attr = attr_dict[rule.attr]
 
         if rule.relation.lower() == 'contain':
-            if rule.value in attr:
+            if rule.value in self.des:
+                self.type = rule.type
+        elif rule.relation.lower() == 'timeq':
+            time_str = self.time.strftime('%Y-%m-%d %H:%M:%S')
+            if time_str == rule.value:
                 self.type = rule.type
         else:
             print('not support current rule.relation:'+rule.relation)
