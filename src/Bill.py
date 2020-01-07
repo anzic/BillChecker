@@ -26,7 +26,7 @@ class Bill():
                 return
         self.conts.append(bitem)
     
-    def save(self, fname='bill.xls'):
+    def save2excel(self, fname='bill.xls'):
         'save bill to excel'
         wb = Workbook()
         sheet1 = wb.add_sheet('Sheet 1')
@@ -55,6 +55,10 @@ class Bill():
         pattern = re.compile(r'charset="(.*?)"')
         res = pattern.findall(eml)
         return res[0]
+
+    def sort_time(self):
+        self.conts.sort(key=Bitem.get_time)
+        pass
 
 def ParseBillFolder(bill_dir):
     from BillAliPay import BillAliPay
@@ -91,6 +95,7 @@ def ParseBillFolder(bill_dir):
 
 if __name__ == '__main__':
     bill = ParseBillFolder('./bill/')
-    bill.save()
+    bill.sort_time()
+    bill.save2excel()
 
     

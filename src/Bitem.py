@@ -56,6 +56,9 @@ class Bitem():
             return True
         return False
 
+    def get_time(self):
+        return self.time
+
 if __name__ == '__main__':
     pass
 
