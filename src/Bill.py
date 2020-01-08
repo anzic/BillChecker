@@ -14,12 +14,11 @@ class Bill():
         'parse bill content from excel(fname)'
         pass
     
-    def merge(self, bill_t):
-        'merge bill with bill_t'
-        for bitem in bill_t.conts:
-            self.merge_item(bitem)
+    def add_bill(self, bill):
+        for bitem in bill.conts:
+            self.add_item(bitem)
 
-    def merge_item(self, bitem):
+    def add_item(self, bitem):
         'insert bitem to bill'
         for i in range(0, len(self.conts)):
             if self.conts[i].merge_item(bitem):
@@ -86,7 +85,7 @@ def ParseBillFolder(bill_dir):
     # Merge Bills
     bill = Bill()
     for bill_t in bills:
-        bill.merge(bill_t)
+        bill.add_bill(bill_t)
 
     rules = ['./rule/rule_high.json', './rule/rule_mid.json', './rule/rule_low.json']
     bill.classify(rules)
